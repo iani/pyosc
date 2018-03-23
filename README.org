@@ -1,0 +1,80 @@
+*** First tests - mac only. CHIP Pro does not load python-osc!
+    :PROPERTIES:
+    :DATE:     <2018-03-17 Sat 19:05>
+    :END:
+ The package is python-osc
+
+ https://pypi.python.org/pypi/python-osc
+
+ Installed on macos with: 
+
+ : pip install python-osc
+
+ Here are the two python scripts that were tried out sucessfully on mac:
+
+ #+BEGIN_SRC python
+ """Small example OSC client
+
+ This program sends 10 random values between 0.0 and 1.0 to the /filter address,
+ waiting for 1 seconds between each value.
+ """
+ import argparse
+ import random
+ import time
+
+ from pythonosc import osc_message_builder
+ from pythonosc import udp_client
+
+ print("hello world")
+
+ client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+
+ for x in range(10) :
+     number = random.random()
+     client.send_message("/filter", [number, "I can also send strings"])
+     print("hello world")
+     print(stupid)
+     time.sleep(0.1)
+
+ print("DONE")
+ #+END_SRC
+
+ #+BEGIN_SRC python
+ """Small example OSC server
+
+ This program listens to several addresses, and prints some information about
+ received packets.
+ """
+ import argparse
+ import math
+
+ from pythonosc import dispatcher
+ from pythonosc import osc_server
+
+ def print_volume_handler(unused_addr, args, volume):
+   print("[{0}] ~ {1}".format(args[0], volume))
+
+ def print_compute_handler(unused_addr, args, volume):
+   try:
+     print("[{0}] ~ {1}".format(args[0], args[1](volume)))
+   except ValueError: pass
+
+ dispatcher = dispatcher.Dispatcher()
+ dispatcher.map("/filter", print)
+ dispatcher.map("/volume", print_volume_handler, "Volume")
+ dispatcher.map("/logvolume", print_compute_handler, "Log volume", math.log)
+
+ server = osc_server.ThreadingOSCUDPServer(
+     ("127.0.0.1", 57130), dispatcher)
+ print("Serving on {}".format(server.server_address))
+ server.serve_forever()
+ #+END_SRC
+
+ And this is the sc code used for receiving and the data from python:
+
+ #+BEGIN_SRC sclang
+ OSCFunc({ | args |
+	 "OSCFunc received the following values from message '/filter':".postln;
+	 args[1..].postln;
+ }, '/filter');
+ #+END_SRC
