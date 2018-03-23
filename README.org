@@ -33,7 +33,6 @@
      number = random.random()
      client.send_message("/filter", [number, "I can also send strings"])
      print("hello world")
-     print(stupid)
      time.sleep(0.1)
 
  print("DONE")
