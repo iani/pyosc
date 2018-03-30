@@ -79,19 +79,34 @@ OSCFunc({ | args |
 #+END_SRC
 * Test with SC only, including simple benchmark with Date
 ** Sender
+*** Simple version
 
- #+BEGIN_SRC sclang
+#+BEGIN_SRC sclang
+  { 
+      var addr;
+      addr = NetAddr("195.251.111.114", 57120);
+      50 do: {
+                  postf("sending to: %\n", addr);
+                  Date.getDate.hourStamp.postln;
+                  addr.sendMsg('/test', 1, 2, 3, Date.getDate.hourStamp);
+                  1.wait;
+      }
+  }.fork;
 
-   //:+ // using snippets to loop this inside a routine. Type C-M-x to run in EMACS
-   var addr;
-   addr = NetAddr("195.251.111.114", 57120);
-   50 do: {
-           postf("sending to: %\n", addr);
-           Date.getDate.hourStamp.postln;
-           addr.sendMsg('/test', 1, 2, 3, Date.getDate.hourStamp);
-           1.wait;
-   }
- #+END_SRC
+#+END_SRC
+*** Snippet version
+  #+BEGIN_SRC sclang
+
+    //:+ // using snippets to loop this inside a routine. Type C-M-x to run in EMACS
+    var addr;
+    addr = NetAddr("195.251.111.114", 57120);
+    50 do: {
+            postf("sending to: %\n", addr);
+            Date.getDate.hourStamp.postln;
+            addr.sendMsg('/test', 1, 2, 3, Date.getDate.hourStamp);
+            1.wait;
+    }
+  #+END_SRC
 ** Receiver
 
  #+BEGIN_SRC sclang
